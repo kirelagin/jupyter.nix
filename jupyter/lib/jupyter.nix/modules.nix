@@ -2,15 +2,28 @@
 #
 # SPDX-License-Identifier: MPL-2.0 OR MIT
 
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 let
 
-  jupyterTypes = import ./types.nix { inherit lib pkgs; };
+  jupyterTypes = import ./types.nix { inherit lib; inherit (config) pkgs; };
 
 in {
 
   options = {
+    pkgs = lib.mkOption {
+      type = lib.types.pkgs;
+      description = "Nixpkgs to use for trivial builders and as the default source of all packages";
+    };
+
+    pythonInterpreter = lib.mkOption {
+      type = lib.types.functionTo lib.types.package;
+      description = "The selector for the Python interpreter to be used by Jupyter and all packages in its environment";
+      default = pkgs: pkgs.python3;
+      defaultText = lib.literalExpression ''pkgs: pkgs.python3'';
+      example = lib.literalExpression ''pkgs: pkgs.python315'';
+    };
+
     jupyterEnvPackages = lib.mkOption {
       type = lib.types.functionTo (lib.types.listOf lib.types.package);
       description = "Selector for Python packages installed alongside Jupyter into the Python environment used to run it";
@@ -42,7 +55,7 @@ in {
 
   config =
     let
-      pp = pkgs.python3Packages;
+      python = config.pythonInterpreter config.pkgs;
       jupyterConfDir = "$out/etc/jupyter";
       jupyterConf = {
         "KernelSpecManager" = {
@@ -54,10 +67,10 @@ in {
       jupyterEnvPackages = pp:
         lib.concatMap (kern: kern.jupyterEnvPackages pp) (lib.attrValues config.kernels);
 
-      outDrv = (pkgs.python3.buildEnv.override {
+      outDrv = (python.buildEnv.override {
         extraLibs = [
-          pp.jupyterlab
-        ] ++ config.jupyterEnvPackages pp;
+          python.pkgs.jupyterlab
+        ] ++ config.jupyterEnvPackages python.pkgs;
 
         postBuild = ''
           mkdir -p -- "${jupyterConfDir}"

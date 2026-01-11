@@ -6,19 +6,15 @@
 
 rec {
 
-  evalJupyterConfig = pkgs: config:
+  evalJupyterConfig = config:
     lib.evalModules {
       modules = [
-        { config = {
-            _module.args = { inherit pkgs; };
-          };
-        }
         { inherit config; }
         ./modules.nix
       ];
     };
 
-  makeJupyterLab = pkgs: config:
-    (evalJupyterConfig pkgs config).config.outDrv;
+  makeJupyterLab = config:
+    (evalJupyterConfig config).config.outDrv;
 
 }

@@ -64,7 +64,8 @@ Then you can expose your Jupyter Lab environment as a runnable package:
     in {
       packages.${system} = {
         # ...
-        jupyter = jupyter.lib.makeJupyterLab pkgs {
+        jupyter = jupyter.lib.makeJupyterLab {
+          inherit pkgs;
           kernels = {
             "Python" = jupyter.lib.kernels.python.makePythonKernel {
               inherit pkgs;
@@ -95,8 +96,12 @@ You need to pass `pkgs` to it, followed by the Jupyter-specific configuration:
 
 ```nix
 {
-  jupyter = jupyter.lib.makeJupyterLab pkgs {
-    kernels = { };
+  jupyter = jupyter.lib.makeJupyterLab {
+    pkgs = nixpkgs.legacyPackages.${system}; # (mandatory) your Nixpkgs set
+    pythonInterpreter = pkgs: pkgs.python3;  # (optional)
+    kernels = {
+      # see below
+    };
   };
 }
 ```

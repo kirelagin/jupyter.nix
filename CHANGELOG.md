@@ -15,6 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- add items here -->
 
+### Added
+
+* New option: `pkgs` (mandatory)
+* New option: `pythonInterpreter` (default: `pkgs: pkgs.python3`)
+
+### Changed
+
+* `makeJupyterLab` no longer accepts the `pkgs` argument (set config option instead)
+
 
 ## [1.0.0]
 

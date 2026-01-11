@@ -20,7 +20,8 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in {
         packages = rec {
-          jupyter = self.lib.makeJupyterLab pkgs {
+          jupyter = self.lib.makeJupyterLab {
+            inherit pkgs;
             kernels = {
               "Python" = self.lib.kernels.python.makePythonKernel {
                 inherit pkgs;
