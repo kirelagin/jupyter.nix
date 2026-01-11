@@ -68,9 +68,13 @@ in {
         '' + lib.concatMapStringsSep "\n" (kern: ''
           ln -s -t "${kernelsDir}" -- "${if lib.isString kern || lib.isDerivation kern then kern else kern.outDir}"
         '') (lib.attrValues config.kernels);
-      }).overrideAttrs (oldAttrs: {
-        inherit (pp.jupyterlab) meta;
-        passthru = { inherit config; };
+      }).overrideAttrs ( {
+        meta = {
+          changelog = "https://github.com/kirelagin/jupyter.nix/blob/main/CHANGELOG.md";
+          homepage = "https://github.com/kirelagin/jupyter.nix";
+          license = with lib.licenses; [ mpl20 mit ];
+          mainProgram = "jupyter-lab";
+        };
       });
     };
 
