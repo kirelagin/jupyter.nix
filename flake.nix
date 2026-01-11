@@ -25,19 +25,12 @@
               "Python" = self.lib.kernels.python.makePythonKernel {
                 inherit pkgs;
                 packages = pp: with pp; [
-                  anywidget
-                  nbconvert
                   numpy
-                  pandas
-                  plotly
                   polars
                   requests
                   scipy
                 ];
-                jupyterEnvPackages = pp: with pp; [
-                  anywidget
-                  plotly  # needs to be in both Python envs
-                ];
+                withPlotly = true;
               };
             };
           };

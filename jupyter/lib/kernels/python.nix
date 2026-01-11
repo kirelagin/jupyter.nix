@@ -6,10 +6,24 @@
 
 {
 
-makePythonKernel = { pkgs, packages, jupyterEnvPackages }:
+makePythonKernel =
+  { pkgs
+  , packages ? _:[], jupyterEnvPackages ? _:[]
+
+  , withMatplotlib ? false
+  , withPlotly ? false
+  }:
   let
     kernelEnv = pkgs.python3.withPackages (pp: [
       pp.ipykernel
+    ] ++ lib.optionals withPlotly [
+      pp.anywidget  # Required for FigureWidget
+      pp.nbconvert  # Required for the mimetype renderer (the default one for Jupyter)
+      pp.pandas  # Dependency of plotly
+      pp.plotly
+    ] ++ lib.optionals withMatplotlib [
+      pp.ipympl
+      pp.matplotlib
     ] ++ packages pp);
   in {
     spec = {
@@ -26,7 +40,14 @@ makePythonKernel = { pkgs, packages, jupyterEnvPackages }:
       logo_32 = "${kernelEnv}/${kernelEnv.sitePackages}/ipykernel/resources/logo-32x32.png";
     };
 
-    inherit jupyterEnvPackages;
+    jupyterEnvPackages = pp:
+      # Plotly itself and anywidget have to be installed in both envs!
+      jupyterEnvPackages pp ++ lib.optionals withPlotly [
+        pp.anywidget
+        pp.plotly
+      ] ++ lib.optionals withMatplotlib [
+        pp.ipympl
+      ];
   };
 
 }
