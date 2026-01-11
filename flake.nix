@@ -21,13 +21,8 @@
       in {
         packages = rec {
           jupyter = self.lib.makeJupyterLab pkgs {
-            jupyterEnvPackages = pp: with pp; [
-              anywidget
-              plotly  # needs to be in both Python envs
-            ];
-
             kernels = {
-              "Python" = self.lib.kernels.python.mkPythonKernel {
+              "Python" = self.lib.kernels.python.makePythonKernel {
                 inherit pkgs;
                 packages = pp: with pp; [
                   anywidget
@@ -39,7 +34,10 @@
                   requests
                   scipy
                 ];
-                # TODO: allow kernel spec to add packages to jupyter env (e.g plotly)
+                jupyterEnvPackages = pp: with pp; [
+                  anywidget
+                  plotly  # needs to be in both Python envs
+                ];
               };
             };
           };

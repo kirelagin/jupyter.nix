@@ -6,23 +6,27 @@
 
 {
 
-mkPythonKernel = { pkgs, packages }:
+makePythonKernel = { pkgs, packages, jupyterEnvPackages }:
   let
     kernelEnv = pkgs.python3.withPackages (pp: [
       pp.ipykernel
     ] ++ packages pp);
   in {
-    argv = [
-      "${kernelEnv.interpreter}"
-      "-m" "ipykernel_launcher"
-      "-f" "{connection_file}"
-    ];
+    spec = {
+      argv = [
+        "${kernelEnv.interpreter}"
+        "-m" "ipykernel_launcher"
+        "-f" "{connection_file}"
+      ];
 
-    language = "python";
+      language = "python";
 
-    logo_svg = "${kernelEnv}/${kernelEnv.sitePackages}/ipykernel/resources/logo-svg.svg";
-    logo_64 = "${kernelEnv}/${kernelEnv.sitePackages}/ipykernel/resources/logo-64x64.png";
-    logo_32 = "${kernelEnv}/${kernelEnv.sitePackages}/ipykernel/resources/logo-32x32.png";
+      logo_svg = "${kernelEnv}/${kernelEnv.sitePackages}/ipykernel/resources/logo-svg.svg";
+      logo_64 = "${kernelEnv}/${kernelEnv.sitePackages}/ipykernel/resources/logo-64x64.png";
+      logo_32 = "${kernelEnv}/${kernelEnv.sitePackages}/ipykernel/resources/logo-32x32.png";
+    };
+
+    inherit jupyterEnvPackages;
   };
 
 }

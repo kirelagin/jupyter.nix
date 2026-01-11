@@ -51,6 +51,9 @@ in {
       };
       kernelsDir = "$out/share/jupyter/kernels";
     in {
+      jupyterEnvPackages = pp:
+        lib.concatMap (kern: kern.jupyterEnvPackages pp) (lib.attrValues config.kernels);
+
       outDrv = (pkgs.python3.buildEnv.override {
         extraLibs = [
           pp.jupyterlab
