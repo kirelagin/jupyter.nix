@@ -8,6 +8,11 @@ rec {
 
   kernels = lib.types.attrsOf (lib.types.either lib.types.path kernel);
 
+  # TODO: Currently, we have one generic kernel type and use functions to generate
+  # these generic kernel specs from the arguments they receive.
+  # Maybe it would be better, instead of these functions, to have proper types
+  # for well-known kernels and use `types.attrTag` (while still keeping the
+  # generic case for user-provided kernels).
   kernel = lib.types.submodule ({ name, config, ...}: {
     options = {
       # See Jupyter docs for details:
@@ -74,7 +79,7 @@ rec {
       };
 
       jupyterEnvPackages = lib.mkOption {
-        # TODO: type
+        type = lib.types.functionTo (lib.types.listOf lib.types.package);
         description = "Selector for extra Python packages to install into the Jupyter python environment";
         default = _: [];
         defaultText = lib.literalExpression ''_: []'';

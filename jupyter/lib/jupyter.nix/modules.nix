@@ -12,7 +12,7 @@ in {
 
   options = {
     jupyterEnvPackages = lib.mkOption {
-      # TODO: type
+      type = lib.types.functionTo (lib.types.listOf lib.types.package);
       description = "Selector for Python packages installed alongside Jupyter into the Python environment used to run it";
       default = _: [];
       defaultText = lib.literalExpression ''_: []'';
