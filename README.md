@@ -4,8 +4,8 @@ SPDX-FileCopyrightText: 2026 Kirill Elagin <https://kir.elagin.me/>
 SPDX-License-Identifier: MPL-2.0 or MIT
 -->
 
-jupter.nix
-===========
+jupyter.nix
+============
 
 _A Nix library for setting up Jupyter Lab_
 
@@ -67,8 +67,7 @@ Then you can expose your Jupyter Lab environment as a runnable package:
         jupyter = jupyter.lib.makeJupyterLab {
           inherit pkgs;
           kernels = {
-            "Python" = jupyter.lib.kernels.python.makePythonKernel {
-              inherit pkgs;
+            "Python".ipykernel = {
               packages = pp: with pp; [
                 numpy
                 polars
@@ -92,7 +91,7 @@ $ nix run .#jupyter
 ### Customisation
 
 The centerpiece of the library is the `makeJupyterLab` function.
-You need to pass `pkgs` to it, followed by the Jupyter-specific configuration:
+You pass the jupyter.nix configuration to it:
 
 ```nix
 {
@@ -109,16 +108,25 @@ You need to pass `pkgs` to it, followed by the Jupyter-specific configuration:
 You will mostly be interested in the `kernels` option, however there are others
 as well (see [`modules.nix`](./jupyter/lib/jupyter.nix/modules.nix) for the detailed documentation).
 
-Each kernel definition is basically a nixified regular Jupyter kernelspec,
-plus some extra options.
-The library also provides helpers for defining kernels of popular types,
-such as Python:
+Kernel definitions have the following general form:
+
+```nix
+{ # ...
+  kernels = {
+    "<Kernel name>"."<kernel type>" = {
+      # kernel-type-specific options
+    };
+  };
+}
+```
+
+The library provides a couple of _kernel types_ out-of-the-box,
+for example, a regular Python kernel (also known as `ipykernel`):
 
 ```nix
 # kernels =
 {
-  "Python" = jupyter.lib.kernels.python.makePythonKernel {
-    inherit pkgs;
+  "python3".ipykernel = {
     packages = pp: with pp; [
       # Add Python packages that you need
       # ...
@@ -134,13 +142,14 @@ such as Python:
 }
 ```
 
-Instead of using helper functions, you could just define your own kernel from scratch.
+You can also provide a [Jupyter kernel spec][jupyter:kernelspec] directly
+by the means of the `kernelspec` kernel type.
 The definition above is roughly equivalent to the following direct definition:
 
 ```nix
 # kernels =
 {
-  "Python" =
+  "python3".kernelspec =
     let
       kernelEnv = pkgs.python3.withPackages (pp: with pp; [
         # These are needed for Plotly
@@ -158,8 +167,9 @@ The definition above is roughly equivalent to the following direct definition:
           "-m" "ipykernel_launcher"
           "-f" "{connection_file}"
         ];
+        display_name = "Python 3 (python3)";
         language = "python";
-        # logos ...
+        # specify logos ...
       };
       jupyterEnvPackages = pp: with pp; [
         anywidget
@@ -169,12 +179,26 @@ The definition above is roughly equivalent to the following direct definition:
 }
 ```
 
+[jupyter:kernelspec]: https://jupyter-client.readthedocs.io/en/stable/kernels.html#kernel-specs
+
+### Kernel types
+
+The most basic kernel type is `kernelspec` – it is simply a Nix-formatted
+kernel specification, which will get directly converted into JSON.
+
+The library also provides the following kernel types:
+
+* `ipykernel` – standard Python kernel
+
+See [`jupyter/kernel-types/README.md`](./jupyter/kernel-types/README.md) for the details
+of how all this works and how to contribute a new kernel type.
+
 
 ## Limitations
 
 * No way to provide global Jupyter configuration
 * No support for Jupyter extensions
-* Definition helper only for Python kernels
+* High-level helpers only for Python kernels
 * ...
 
 These are not inherent technical limitations, I have just implemented the bare minimum

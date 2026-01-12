@@ -23,8 +23,7 @@
           jupyter = self.lib.makeJupyterLab {
             inherit pkgs;
             kernels = {
-              "Python" = self.lib.kernels.python.makePythonKernel {
-                inherit pkgs;
+              "python3".ipykernel = {
                 packages = pp: with pp; [
                   numpy
                   polars

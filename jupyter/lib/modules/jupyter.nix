@@ -2,14 +2,9 @@
 #
 # SPDX-License-Identifier: MPL-2.0 OR MIT
 
-{ config, lib, ... }:
+{ config, jupyterLib, lib, ... }:
 
-let
-
-  jupyterTypes = import ./types.nix { inherit lib; inherit (config) pkgs; };
-
-in {
-
+{
   options = {
     pkgs = lib.mkOption {
       type = lib.types.pkgs;
@@ -29,11 +24,40 @@ in {
       description = "Selector for Python packages installed alongside Jupyter into the Python environment used to run it";
       default = _: [];
       defaultText = lib.literalExpression ''_: []'';
+      # TODO: example
+    };
+
+    kernelTypes = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.deferredModuleWith {
+        staticModules = [ ./kernel.nix ];  # This is what defines the output config options commont to all kernel types
+      });
+      description = "Supported kernel types";
+      example = {
+        kernelspec = ./moduels/kernelspec.nix;  # kernel defined directly by a kernelspec
+      };
     };
 
     kernels = lib.mkOption {
-      type = jupyterTypes.kernels;
-      description = "Jupter kernels to enable";
+      type = lib.types.attrsOf (lib.types.attrTag (lib.mapAttrs (name: kernelTypeModule:
+        lib.mkOption {
+          type = lib.types.submoduleWith {
+            modules = [{
+              imports = [
+                kernelTypeModule
+                ({ _prefix, ... }: {
+                  _module.args = {
+                    pkgs = config.pkgs;
+                    kernelName = lib.last (lib.init _prefix);  # kernels.<kernelName>.<kernelType> (i.e. `name` = kernel type)
+                  };
+                })
+              ];
+            }];
+            specialArgs = { inherit jupyterLib; };
+          };
+          description = "${name} kernel definition";
+        }
+      ) config.kernelTypes));
+      description = "Jupter kernels definitions";
       default = {};
       defaultText = lib.literalExpression ''{}'';
     };
@@ -63,9 +87,13 @@ in {
         };
       };
       kernelsDir = "$out/share/jupyter/kernels";
+
+      # This is annoying but all the values in `attrTag` remain one-level deep
+      # under the tag, which we do not know. But we know that there is exactly one...
+      kernels = lib.mapAttrs (_: v: v.${lib.head (lib.attrNames v)}) config.kernels;
     in {
       jupyterEnvPackages = pp:
-        lib.concatMap (kern: kern.jupyterEnvPackages pp) (lib.attrValues config.kernels);
+        lib.concatMap (kern: kern.jupyterEnvPackages pp) (lib.attrValues kernels);
 
       outDrv = (python.buildEnv.override {
         extraLibs = [
@@ -78,9 +106,9 @@ in {
 
           rm -rf "${kernelsDir}"
           mkdir -p -- "${kernelsDir}"
-        '' + lib.concatMapStringsSep "\n" (kern: ''
-          ln -s -t "${kernelsDir}" -- "${if lib.isString kern || lib.isDerivation kern then kern else kern.outDir}"
-        '') (lib.attrValues config.kernels);
+        '' + lib.concatStringsSep "\n" (lib.mapAttrsToList (name: kern: ''
+          ln -s -- "${kern.outDir}" "${kernelsDir}/${name}"
+        '') kernels);
       }).overrideAttrs ( {
         meta = {
           changelog = "https://github.com/kirelagin/jupyter.nix/blob/main/CHANGELOG.md";

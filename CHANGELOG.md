@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * `makeJupyterLab` no longer accepts the `pkgs` argument (set config option instead)
+* Kernel types are now implemented in the module system rather than as simple functions
 
 
 ## [1.0.0]
