@@ -67,7 +67,7 @@ Then you can expose your Jupyter Lab environment as a runnable package:
         jupyter = jupyter.lib.makeJupyterLab {
           inherit pkgs;
           kernels = {
-            "Python".ipykernel = {
+            "python".ipykernel = {
               packages = pp: with pp; [
                 numpy
                 polars
@@ -126,7 +126,7 @@ for example, a regular Python kernel (also known as `ipykernel`):
 ```nix
 # kernels =
 {
-  "python3".ipykernel = {
+  "python".ipykernel = {
     packages = pp: with pp; [
       # Add Python packages that you need
       # ...
@@ -149,7 +149,7 @@ The definition above is roughly equivalent to the following direct definition:
 ```nix
 # kernels =
 {
-  "python3".kernelspec =
+  "python".kernelspec =
     let
       kernelEnv = pkgs.python3.withPackages (pp: with pp; [
         # These are needed for Plotly
@@ -167,7 +167,7 @@ The definition above is roughly equivalent to the following direct definition:
           "-m" "ipykernel_launcher"
           "-f" "{connection_file}"
         ];
-        display_name = "Python 3 (python3)";
+        display_name = "Python 3 (python)";
         language = "python";
         # specify logos ...
       };
