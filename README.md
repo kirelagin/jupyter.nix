@@ -19,7 +19,7 @@ This repository provides:
 
 ### Running
 
-Just Jupyter Lab with some basic Python packages available:
+Just run Jupyter Lab with some basic Python packages available:
 
 ```shell
 $ nix run github:kirelagin/jupyter.nix
