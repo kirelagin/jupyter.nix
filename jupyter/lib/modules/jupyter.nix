@@ -48,6 +48,7 @@
                   _module.args = {
                     pkgs = config.pkgs;
                     kernelName = lib.last (lib.init _prefix);  # kernels.<kernelName>.<kernelType> (i.e. `name` = kernel type)
+                    jupyterConfig = config;
                   };
                 })
               ];

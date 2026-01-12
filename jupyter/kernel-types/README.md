@@ -40,6 +40,7 @@ Each kernel module definition will receive the following arguments:
 * Jupyter.nix specific arguments:
   * `kernelName` – actually the name of this kernel in the attrset
     (i.e. the _second-last_ attribute name);
+  * `jupyterConfig` – the top-level config of jupyter.nix;
   * `jupyterLib` – the jupyter.nix library.
 
 You can define whatever options make sense for this kernel type.

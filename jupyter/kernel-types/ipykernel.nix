@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0 OR MIT
 
-{ kernelName, name, config, jupyterLib, lib, pkgs, ... }:
+{ kernelName, name, config, jupyterConfig, jupyterLib, lib, pkgs, ... }:
 
 {
 
@@ -32,7 +32,11 @@
 
   config =
     let
-      kernelEnv = pkgs.python3.withPackages (pp: [
+      # NOTE: We always use the same Python interpreter for the kernel as for Jupyter itself.
+      # Python packages that need to be installed into both environments may expect to have
+      # “compatible” versions (whatever this means) – an easy way to shoot onself in the foot.
+      # Should we allow this and let the user deal with the issues?
+      kernelEnv = (jupyterConfig.pythonInterpreter jupyterConfig.pkgs).withPackages (pp: [
         pp.ipykernel
       ] ++ lib.optionals config.withPlotly [
         pp.anywidget  # Required for FigureWidget
