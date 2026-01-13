@@ -12,7 +12,7 @@
       description = "Selector for Python packages to include with the kernel";
       default = _: [];
       defaultText = lib.literalExpression ''_: []'';
-      # TODO: example
+      example = lib.literalExpression ''pp: with pp; [ plotly ]'';
     };
 
     withMatplotlib = lib.mkOption {
@@ -36,7 +36,7 @@
       # Python packages that need to be installed into both environments may expect to have
       # “compatible” versions (whatever this means) – an easy way to shoot onself in the foot.
       # Should we allow this and let the user deal with the issues?
-      kernelEnv = (jupyterConfig.pythonInterpreter jupyterConfig.pkgs).withPackages (pp: [
+      kernelEnv = (jupyterConfig.pythonInterpreter pkgs).withPackages (pp: [
         pp.ipykernel
       ] ++ lib.optionals config.withPlotly [
         pp.anywidget  # Required for FigureWidget

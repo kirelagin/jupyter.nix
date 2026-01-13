@@ -7,7 +7,7 @@ SPDX-License-Identifier: MPL-2.0 or MIT
 jupyter.nix
 ============
 
-_A Nix library for setting up Jupyter Lab_
+_A Nix library for setting up Jupyter Lab._
 
 This repository provides:
 
@@ -54,7 +54,7 @@ Then you can expose your Jupyter Lab environment as a runnable package:
 ```nix
 # flake.nix
 {
-  # ...
+  # inputs = ...
 
   outputs = { self, nixpkgs, jupyter }:
     let
@@ -90,11 +90,13 @@ $ nix run .#jupyter
 
 ### Customisation
 
+#### `makeJupyterLab`
+
 The centerpiece of the library is the `makeJupyterLab` function.
 You pass the jupyter.nix configuration to it:
 
 ```nix
-{
+{ # ...
   jupyter = jupyter.lib.makeJupyterLab {
     pkgs = nixpkgs.legacyPackages.${system}; # (mandatory) your Nixpkgs set
     pythonInterpreter = pkgs: pkgs.python3;  # (optional)
@@ -120,6 +122,8 @@ Kernel definitions have the following general form:
 }
 ```
 
+#### Python kernel (`ipykernel`)
+
 The library provides a couple of _kernel types_ out-of-the-box,
 for example, a regular Python kernel (also known as `ipykernel`):
 
@@ -142,9 +146,30 @@ for example, a regular Python kernel (also known as `ipykernel`):
 }
 ```
 
+#### Haskell kernel (`ihaskell`)
+
+Here is an example of an IHaskell kernel for the Haskell language:
+
+```nix
+# kernels =
+{
+  "Haskell".ihaskell = {
+    packages = hp: with hp; [
+      aeson
+      containers
+      text
+
+      ihaskell-aeson
+    ]
+  };
+}
+```
+
+#### Raw Jupyter kernel spec
+
 You can also provide a [Jupyter kernel spec][jupyter:kernelspec] directly
 by the means of the `kernelspec` kernel type.
-The definition above is roughly equivalent to the following direct definition:
+The Python definition above is roughly equivalent to the following direct definition:
 
 ```nix
 # kernels =
@@ -189,6 +214,7 @@ kernel specification, which will get directly converted into JSON.
 The library also provides the following kernel types:
 
 * `ipykernel` – standard Python kernel
+* `ihaskell` – standard Haskell kernel
 
 See [`jupyter/kernel-types/README.md`](./jupyter/kernel-types/README.md) for the details
 of how all this works and how to contribute a new kernel type.
@@ -198,7 +224,7 @@ of how all this works and how to contribute a new kernel type.
 
 * No way to provide global Jupyter configuration
 * No support for Jupyter extensions
-* High-level helpers only for Python kernels
+* High-level helpers only for Python and Haskell kernels (could be more!)
 * ...
 
 These are not inherent technical limitations, I have just implemented the bare minimum

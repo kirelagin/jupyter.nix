@@ -24,7 +24,7 @@
       description = "Selector for Python packages installed alongside Jupyter into the Python environment used to run it";
       default = _: [];
       defaultText = lib.literalExpression ''_: []'';
-      # TODO: example
+      example = lib.literalExpression ''pp: with pp; [ plotly ]'';
     };
 
     kernelTypes = lib.mkOption {

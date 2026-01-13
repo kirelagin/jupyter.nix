@@ -85,9 +85,9 @@
         ln -s -- "${pkgs.writeText "${name}.json" jsonSpec}" "$out/kernel.json"
       '' + lib.optionalString (config.spec.logo_svg != null) ''
         ln -s -- "${config.spec.logo_svg}" "$out/logo-svg.svg"
-      '' + lib.optionalString (config.spec.logo_32 != null) ''
+      '' + lib.optionalString (config.spec.logo_64 != null) ''
         ln -s -- "${config.spec.logo_64}" "$out/logo-64x64.png"
-      '' + lib.optionalString (config.spec.logo_svg != null) ''
+      '' + lib.optionalString (config.spec.logo_32 != null) ''
         ln -s -- "${config.spec.logo_32}" "$out/logo-32x32.png"
       '');
     };

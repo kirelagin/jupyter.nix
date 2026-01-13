@@ -7,6 +7,7 @@
 let
   kernelTypes = {
     kernelspec = ./modules/kernelspec.nix;
+    ihaskell = ../kernel-types/ihaskell.nix;
     ipykernel = ../kernel-types/ipykernel.nix;
   };
 
