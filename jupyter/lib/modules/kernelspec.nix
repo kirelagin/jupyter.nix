@@ -78,7 +78,7 @@
 
   config =
     let
-      jsonSpec = builtins.toJSON (lib.filterAttrs (k: v: v != null) config.spec);
+      jsonSpec = lib.generators.toJSON { } (lib.filterAttrs (k: v: v != null) config.spec);
     in {
       outDir = pkgs.runCommandLocal "jupyter-kernelspec-${name}" { } (''
         mkdir -p -- "$out"

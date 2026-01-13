@@ -80,13 +80,20 @@
 
   config =
     let
-      python = config.pythonInterpreter config.pkgs;
-      jupyterConfDir = "$out/etc/jupyter";
-      jupyterConf = {
-        "KernelSpecManager" = {
-          "ensure_native_kernel" = config.enableNativeKernel;
+      inherit (config) pkgs;
+
+      python = config.pythonInterpreter pkgs;
+
+      jupyterConf = pkgs.writeTextFile {
+        name = "jupyterConf";
+        destination = "/etc/jupyter/jupyter_config.json";
+        text = lib.generators.toJSON { } {
+          "KernelSpecManager" = {
+            "ensure_native_kernel" = config.enableNativeKernel;
+          };
         };
       };
+
       kernelsDir = "$out/share/jupyter/kernels";
 
       # This is annoying but all the values in `attrTag` remain one-level deep
@@ -96,27 +103,30 @@
       jupyterEnvPackages = pp:
         lib.concatMap (kern: kern.jupyterEnvPackages pp) (lib.attrValues kernels);
 
-      outDrv = (python.buildEnv.override {
+      outDrv = python.buildEnv.override (orig: {
+        buildEnv = { paths, ... }@args: orig.buildEnv (args // {
+          paths = paths ++ [
+            jupyterConf
+          ];
+
+          meta = {
+            changelog = "https://github.com/kirelagin/jupyter.nix/blob/main/CHANGELOG.md";
+            homepage = "https://github.com/kirelagin/jupyter.nix";
+            license = with lib.licenses; [ mpl20 mit ];
+            mainProgram = "jupyter-lab";
+          };
+        });
+
         extraLibs = [
           python.pkgs.jupyterlab
         ] ++ config.jupyterEnvPackages python.pkgs;
 
         postBuild = ''
-          mkdir -p -- "${jupyterConfDir}"
-          printf -- '%s\n' '${builtins.toJSON jupyterConf}' > "${jupyterConfDir}/jupyter_config.json"
-
           rm -rf "${kernelsDir}"
           mkdir -p -- "${kernelsDir}"
         '' + lib.concatStringsSep "\n" (lib.mapAttrsToList (name: kern: ''
           ln -s -- "${kern.outDir}" "${kernelsDir}/${name}"
         '') kernels);
-      }).overrideAttrs ( {
-        meta = {
-          changelog = "https://github.com/kirelagin/jupyter.nix/blob/main/CHANGELOG.md";
-          homepage = "https://github.com/kirelagin/jupyter.nix";
-          license = with lib.licenses; [ mpl20 mit ];
-          mainProgram = "jupyter-lab";
-        };
       });
     };
 
