@@ -7,7 +7,7 @@
 {
   options = {
     outDir = lib.mkOption {
-      type = lib.types.package;
+      type = lib.types.path;
       description = "Output kernel definition";
       internal = true;
       readOnly = true;
