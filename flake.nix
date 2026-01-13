@@ -43,6 +43,20 @@
           reuse = pkgs.runCommand "reuse-lint" {
             nativeBuildInputs = [ pkgs.reuse ];
           } ''reuse --root ${./.} lint > "$out"'';
+          all-kernel-types = self.lib.makeJupyterLab {
+            inherit pkgs;
+            kernels = {
+              "kernelspec".kernelspec = {
+                spec = {
+                  argv = [ "echo" "hello" ];
+                  display_name = "kernelspec test";
+                  language = "none";
+                };
+              };
+              "ipykernel".ipykernel = { };
+              "ihaskell".ihaskell = { };
+            };
+          };
         };
       }
     );
