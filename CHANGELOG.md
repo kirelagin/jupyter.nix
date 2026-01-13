@@ -15,18 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- add items here -->
 
-### Added
-
-* New option: `pkgs` (mandatory)
-* New option: `pythonInterpreter` (default: `pkgs: pkgs.python3`)
-
-### Changed
-
-* `makeJupyterLab` no longer accepts the `pkgs` argument (set config option instead)
-* Kernel types are now implemented in the module system rather than as simple functions
-* Allow kernel modules to access the top-level configuration
-* Always match the Python interpreter/packages versions in the Jupyter env and in Python kernels
-
 
 ## [1.0.0]
 
