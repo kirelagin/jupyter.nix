@@ -97,6 +97,9 @@
           "KernelSpecManager" = {
             "ensure_native_kernel" = config.enableNativeKernel;
           };
+          "LabApp" = {
+            "extension_manager" = "readonly";
+          };
         };
       };
 

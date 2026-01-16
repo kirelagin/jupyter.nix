@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * For ipykernel, when `enablePlotly = true`, do not install `anywidget` and
   `plotly` Python packages into the Jupyter env, just install the extensions.
+* Force read-only extension manager in the webui.
 
 
 ## [1.0.0]
