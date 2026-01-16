@@ -38,6 +38,21 @@
         hp.ihaskell
       ] ++ config.packages hp);
 
+      dataDir =
+        # FIXME: Why does this have to be so hard??
+        let
+          dataDir1 = "${haskellPackages.ihaskell.data}/share/${haskellPackages.ghc.haskellCompilerName}";
+          files = builtins.readDir dataDir1;
+          subdir = lib.head (lib.attrNames files);  # Assume there is exactly one
+        in "${dataDir1}/${subdir}/${haskellPackages.ihaskell.name}";
+
+      # Haskell syntax highlighting extension
+      jupyterlab-ihaskell = pkgs.runCommandLocal "jupyterlab-ihaskell" { } ''
+        extDir="$out/share/jupyter/labextensions"
+        mkdir -p -- "$extDir"
+        ln -sT -- "${dataDir}/jupyterlab-ihaskell/labextension" "$extDir/jupyterlab-ihaskell"
+      '';
+
       spec = {
         argv = [
           (lib.getExe' kernelEnv "ihaskell")
@@ -53,18 +68,14 @@
 
         language = "haskell";
 
-        logo_svg =
-          # FIXME: Why does this have to be so hard??
-          let
-            dataDir1 = "${haskellPackages.ihaskell.data}/share/${haskellPackages.ghc.haskellCompilerName}";
-            files = builtins.readDir dataDir1;
-            subdir = lib.head (lib.attrNames files);  # Assume it is exactly one
-            htmlDir = "${dataDir1}/${subdir}/${haskellPackages.ihaskell.name}/html";
-          in
-            "${htmlDir}/logo-64x64.svg";
+        logo_svg = "${dataDir}/html/logo-64x64.svg";
       };
     in {
       outDir = jupyterLib.buildKernelSpec pkgs name spec;
+
+      jupyterExtensions = [
+        jupyterlab-ihaskell
+      ];
     };
 
 }

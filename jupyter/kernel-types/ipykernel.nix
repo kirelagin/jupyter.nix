@@ -66,13 +66,18 @@
     in {
       outDir = jupyterLib.buildKernelSpec pkgs name spec;
 
-      # Plotly itself and anywidget have to be installed in both envs!
-      # Same for ipympl for Matplotlib
+      jupyterExtensions =
+        let
+          pp = (jupyterConfig.pythonInterpreter pkgs).pkgs;
+        in
+          lib.optionals config.withPlotly [
+            pp.anywidget
+            pp.plotly
+          ];
+
+      # ipympl for Matplotlib needs to be installed in both envs
       jupyterEnvPackages = pp:
-        lib.optionals config.withPlotly [
-          pp.anywidget
-          pp.plotly
-        ] ++ lib.optionals config.withMatplotlib [
+        lib.optionals config.withMatplotlib [
           pp.ipympl
         ];
     };

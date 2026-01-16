@@ -27,6 +27,12 @@
       example = lib.literalExpression ''pp: with pp; [ plotly ]'';
     };
 
+    jupyterExtensions = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      description = "Packages containing Jupyter extensions to install";
+      default = [ ];
+    };
+
     kernelTypes = lib.mkOption {
       type = lib.types.attrsOf (lib.types.deferredModuleWith {
         staticModules = [ ./kernel.nix ];  # This is what defines the output config options commont to all kernel types
@@ -96,12 +102,25 @@
 
       kernelsDir = "$out/share/jupyter/kernels";
 
+      extensionsDir = "share/jupyter/labextensions";
+      extensions = pkgs.symlinkJoin {
+        name = "jupyter-labextensions";
+        paths = config.jupyterExtensions;
+        stripPrefix = "/${extensionsDir}";
+        failOnMissing = true;
+      };
+
       # This is annoying but all the values in `attrTag` remain one-level deep
       # under the tag, which we do not know. But we know that there is exactly one...
       kernels = lib.mapAttrs (_: v: v.${lib.head (lib.attrNames v)}) config.kernels;
     in {
       jupyterEnvPackages = pp:
         lib.concatMap (kern: kern.jupyterEnvPackages pp) (lib.attrValues kernels);
+
+      jupyterExtensions = [
+        python.pkgs.jupyterlab-widgets
+        python.pkgs.jupyterlab-pygments
+      ] ++ lib.concatMap (kern: kern.jupyterExtensions) (lib.attrValues kernels);
 
       outDrv = python.buildEnv.override (orig: {
         buildEnv = { paths, ... }@args: orig.buildEnv (args // {
@@ -126,11 +145,14 @@
           # so it gets symlinked into our environment, but we do not want it!
           # XXX: this might be a bit fragile, since we assume that we can `rm` it,
           # which might not be always true (e.g. if there parent is a symlink into another drv).
-          rm -rf "${kernelsDir}"
+          rm -rf -- "${kernelsDir}"
           mkdir -p -- "${kernelsDir}"
         '' + lib.concatStringsSep "\n" (lib.mapAttrsToList (name: kern: ''
-          ln -s -- "${kern.outDir}" "${kernelsDir}/${name}"
-        '') kernels);
+          ln -sT -- "${kern.outDir}" "${kernelsDir}/${name}"
+        '') kernels) + ''
+          rm -rf -- "$out/${extensionsDir}"
+          ln -sT -- "${extensions}" "$out/${extensionsDir}"
+        '';
       });
     };
 

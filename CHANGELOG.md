@@ -13,7 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-<!-- add items here -->
+### Added
+
+* Add basic support for Jupyter extensions (`jupyterExtensions`
+  top-level configuration option and kernel config output option).
+* Make the IHaskell kernell install its extension for syntax highlighting.
+
+### Changed
+
+* For ipykernel, when `enablePlotly = true`, do not install `anywidget` and
+  `plotly` Python packages into the Jupyter env, just install the extensions.
 
 
 ## [1.0.0]
