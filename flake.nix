@@ -32,6 +32,8 @@
                 ];
                 withPlotly = true;
               };
+              "Haskell".ihaskell = {
+              };
             };
           };
 
