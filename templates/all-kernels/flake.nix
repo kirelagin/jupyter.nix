@@ -41,6 +41,13 @@
               #  ];
               #rtsOptions = [ ];
             };
+
+            "Julia".ijulia = {
+              #packages = [
+              #  # add Julia packages
+              #];
+              #project = "@.";
+            };
           };
 
           #collaboration.enable = true;

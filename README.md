@@ -53,14 +53,14 @@ See the [documentation](#documentation) below for the full story.
 * [Kernel authoring](./doc/kernel-authoring.md) – how to write your own kernel
   type.
 
-The built-in kernel types are `ipykernel` (Python), `ihaskell` (Haskell), and
-`kernelspec` (a raw Jupyter kernel spec written in Nix).
+The built-in kernel types are `ipykernel` (Python), `ihaskell` (Haskell),
+`ijulia` (Julia), and `kernelspec` (a raw Jupyter kernel spec written in Nix).
 
 
 ## Limitations
 
 * Only a fixed subset of global Jupyter configuration is exposed.
-* High-level helpers only for Python and Haskell kernels (could be more!).
+* High-level helpers only for Python, Haskell, and Julia kernels (could be more!).
 * ...
 
 These are not inherent technical limitations, just the bare minimum that I, as a

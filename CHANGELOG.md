@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Add high-level support for Julia kernels (`ijulia` kernel type).
+* Add `project` option to the `ijulia` kernel type to support Julia projects
+  (use `"@."` for automatic root detection).
 * Add support for Real-Time Collaboration (`jupyter-collaboration`).
   (Set `collaboration.enable = true`.)
 * Add `settings` for providing arbitrary `jupyter_config.json` settings.

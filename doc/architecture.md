@@ -26,7 +26,8 @@ jupyter/
 ├── kernel-types.nix         A registry of built-in kernel types
 └── kernel-types/
     ├── ipykernel.nix        Built-in Python kernel type
-    └── ihaskell.nix         Built-in Haskell kernel type
+    ├── ihaskell.nix         Built-in Haskell kernel type
+    └── ijulia.nix           Built-in Julia kernel type
 ```
 
 ## The library entry point (`jupyter/lib.nix`)
@@ -34,7 +35,7 @@ jupyter/
 `jupyter/lib.nix` is what gets exposed as `jupyter.lib`. It:
 
 * defines the registry of built-in kernel types (`kernelspec`, `ipykernel`,
-  `ihaskell`);
+  `ihaskell`, `ijulia`);
 * exposes `makeJupyterLab`, the main user-facing function;
 * exposes helpers for kernel-type authors (`kernelspecKernel`,
   `buildKernelSpec`).

@@ -150,6 +150,7 @@ The built-in kernel types are:
 
 * `ipykernel` – standard Python kernel
 * `ihaskell` – standard Haskell kernel
+* `ijulia` – standard Julia kernel
 * `kernelspec` – a raw [Jupyter kernel spec][jupyter:kernelspec] written in Nix
 
 See [`examples.md`](./examples.md) for concrete configurations of each, and the

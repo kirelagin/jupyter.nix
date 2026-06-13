@@ -54,6 +54,33 @@ kernels = {
 };
 ```
 
+## Julia kernel (`ijulia`)
+
+A standard Julia kernel based on IJulia.
+
+```nix
+kernels = {
+  "Julia".ijulia = {
+    packages = [
+      "CSV"
+      "DataFrames"
+      "Distributions"
+    ];
+  };
+};
+```
+
+You can also use an existing Julia project with `Project.toml` and
+`Manifest.toml` by providing its directory:
+
+```nix
+kernels = {
+  "Julia project".ijulia = {
+    project = "@.";
+  };
+};
+```
+
 ## Raw Jupyter kernel spec (`kernelspec`)
 
 Provide a [Jupyter kernel spec][jupyter:kernelspec] directly in Nix. The

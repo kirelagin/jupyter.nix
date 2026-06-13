@@ -93,6 +93,7 @@
               };
               "ipykernel".ipykernel = { };
               "ihaskell".ihaskell = { };
+              "julia".ijulia = { };
             };
           };
 
